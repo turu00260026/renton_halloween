@@ -807,14 +807,14 @@ function render() {
     PARTS.forEach(p => { if (p.screen) drawCandy(p); });
     const b1 = { text: TXT.ALL[0], t: sceneT + 1.0, until: 1e9 }, b2 = { text: TXT.ALL[1], t: sceneT + 2.0, until: 1e9 };
     // 全クリアの吹き出しは2人の顔の下にあるので、しっぽを上（口元）へ向ける。2人いっしょの「ハッピーハロウィン！」は上の見出しと重複するので出さない（つる指示 2026-10-05）
-    drawBubble(b1, 150, 320, true, false, true); drawBubble(b2, 300, 408, true, false, true);
+    drawBubble(b1, 150, 158, true); drawBubble(b2, 300, 246, true);   // 吹き出しは頭の上（つる指示 2026-10-05）
     if (k > 3.0) {
       const a = clamp((k - 3.0) / 0.4, 0, 1); ctx.globalAlpha = a;
       // 見出しは2人の顔にかからないよう上へ（つる指摘 2026-10-05）
-      ctx.fillStyle = 'rgba(20,8,40,.55)'; roundRect(30, 74, W - 60, 138, 20); ctx.fill();
-      txt(TXT.all[0], W / 2, 124, 34, '#ffb43a', 'center', 8); txt(TXT.all[1], W / 2, 162, 19, '#fff', 'center', 5);
-      txt(TXT.candyCount(candyTotal), W / 2, 194, 17, '#ffe9a8', 'center', 4, 800);
-      if (a >= 1) button(TXT.btn.title, W / 2, 660, 210, toTitle, '#6a54a0');   // 全クリアは「タイトルへ」だけ（つる指示 2026-10-05）
+      ctx.fillStyle = 'rgba(20,8,40,.55)'; roundRect(30, 450, W - 60, 138, 20); ctx.fill();   // 見出しは2人のお腹の高さ（つる指示）
+      txt(TXT.all[0], W / 2, 500, 34, '#ffb43a', 'center', 8); txt(TXT.all[1], W / 2, 538, 19, '#fff', 'center', 5);
+      txt(TXT.candyCount(candyTotal), W / 2, 570, 17, '#ffe9a8', 'center', 4, 800);
+      if (a >= 1) button(TXT.btn.title, W / 2, 770, 210, toTitle, '#6a54a0');   // 全クリアは「タイトルへ」だけ（つる指示 2026-10-05）
       ctx.globalAlpha = 1;
     }
   }
