@@ -18,10 +18,13 @@
 <style>
   html,body{margin:0;height:100%;background:#0b0820;overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
   #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  /* PCなど横長の画面で、左右の余白に夜のお城をぼかして敷く（つる指示 2026-10-05） */
+  #bgblur{position:fixed;inset:-40px;background:#0b0820 url('assets/bg/bg_castle_night_01.png') center top/cover no-repeat;filter:blur(14px) brightness(.75) saturate(1.1);transform:scale(1.05);pointer-events:none}
   canvas{display:block;cursor:pointer}
 </style>
 </head>
 <body>
+<div id="bgblur"></div>
 <div id="wrap"><canvas id="cv"></canvas></div>
 <script>
 /* =====================================================================
