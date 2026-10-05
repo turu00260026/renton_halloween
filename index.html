@@ -33,7 +33,7 @@ const FONT = '"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo
 
 /* ---------------- 配置（ワールド座標・zoom=1 のとき） ---------------- */
 const GROUND = 700;            // 地面（ドラキュラの足元・転がる床）
-const PED_TOP = 568;           // 台座の上面（塔の土台・狼の着地点）
+const PED_TOP = 588; /* 2026-10-05 描き直した振り抜き絵のハンマー高さに合わせて568→588 */           // 台座の上面（塔の土台・狼の着地点）
 const BW = 84, BH = 50;        // かぼちゃ1段の幅・高さ
 const TX = 232;                // 塔の中心x
 const DX = 100;                // ドラキュラの立ち位置x（ハンマーの頭が最下段に当たる位置）
@@ -80,11 +80,13 @@ const TXT = {
 /* ---------------- 素材（置くだけで差し替わる） ---------------- */
 // ax/ay = アンカー（足元中央など）を画像サイズに対する比率で持つ。原寸=1086x1448 / 1254x1254 で実測
 const IMG = {
-  d_idle:   { f: 'chara/chara_dracula_01_idle.png',    ax: 600 / 1086, ay: 1434 / 1448, ow: 1086 },
-  d_windup: { f: 'chara/chara_dracula_04_windup.png',  ax: 584 / 1086, ay: 1414 / 1448, ow: 1086 },
-  d_swing:  { f: 'chara/chara_dracula_02_swing.png',   ax: 502 / 1086, ay: 1364 / 1448, ow: 1086 },
-  d_hi:     { f: 'chara/chara_dracula_03_hitatch.png', ax: 600 / 1086, ay: 1424 / 1448, ow: 1086 },
-  d_sad:    { f: 'chara/chara_dracula_05_sad.png',     ax: 590 / 1086, ay: 1427 / 1448, ow: 1086 },   // 倒れたときのしょんぼり（つる指示 2026-10-05）
+  // 2026-10-05 ハンマー頭部の統一をCodex描き起こしでやり直し、キャンバスを1586x1788→元の1086x1448に戻した。
+  // ax/ayは新しい各絵の足元（2本の足の中点）をnumpyで実測して再計算。ow は「原寸のキャンバス幅」=1086。
+  d_idle:   { f: 'chara/chara_dracula_01_idle.png',    ax: 646 / 1086, ay: 1425 / 1448, ow: 1086 },
+  d_windup: { f: 'chara/chara_dracula_04_windup.png',  ax: 601 / 1086, ay: 1366 / 1448, ow: 1086 },
+  d_swing:  { f: 'chara/chara_dracula_02_swing.png',   ax: 490 / 1086, ay: 1351 / 1448, ow: 1086 },
+  d_hi:     { f: 'chara/chara_dracula_03_hitatch.png', ax: 675 / 1086, ay: 1424 / 1448, ow: 1086 },
+  d_sad:    { f: 'chara/chara_dracula_05_sad.png',     ax: 652 / 1086, ay: 1418 / 1448, ow: 1086 },   // 倒れたときのしょんぼり（つる指示 2026-10-05）
   w_smile:  { f: 'chara/chara_wolf_01_smile.png',  ax: 622 / 1254, ay: 1209 / 1254, ow: 1254 },
   w_wob:    { f: 'chara/chara_wolf_02_wobble.png', ax: 600 / 1254, ay: 1181 / 1254, ow: 1254 },
   w_fall:   { f: 'chara/chara_wolf_03_fall.png',   ax: 628 / 1254, ay: 607 / 1254,  ow: 1254 },
