@@ -763,6 +763,10 @@ function render() {
   if (scene === 'play' || scene === 'intro') drawGauge();
   if (scene === 'title') {
     ctx.save(); ctx.translate(0, 70); drawCG(1); ctx.restore();   // タイトルも全クリア絵（つる指示 2026-10-05）。ロゴで顔が隠れないよう下げる
+    for (let i = 0; i < 12; i++) {                                 // 一枚絵の上端の継ぎ目を、背景へなめらかにぼかす
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 60 + i * 5, W, 5); ctx.clip(); ctx.globalAlpha = 1 - i / 12; drawBG(); ctx.restore();
+    }
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, 60); ctx.clip(); drawBG(); ctx.restore();
     drawLogo(150);
     if (Math.floor((T - sceneT) * 2) % 2 === 0) txt(TXT.tapStart, W / 2, 776, 26, '#fff', 'center', 6);   // 1秒周期で点滅
     ctx.globalAlpha = .6; txt(TXT.soundNote, W - 14, H - 14, 13, '#fff', 'right', 3, 700); ctx.globalAlpha = 1;
