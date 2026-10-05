@@ -19,12 +19,23 @@
   html,body{margin:0;height:100%;background:#0b0820;overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
   #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
   /* PCなど横長の画面で、左右の余白に夜のお城をぼかして敷く（つる指示 2026-10-05） */
+  /* PCのトップ画面だけ、横長のタイトル絵を画面いっぱいに出す（つる指示 2026-10-05）。スマホ・縦長画面では使わない */
+  #titlewide{position:fixed;inset:0;display:none;z-index:5;cursor:pointer;background:#0b0820 url('assets/cg/title_wide_pr.jpg') center/cover no-repeat}
+  body.wide-title #titlewide{display:block}
+  body.wide-title #wrap{visibility:hidden}
+  /* 横長のPR画像（ロゴ入り）を使うので、ロゴは重ねず「クリックでスタート」だけをロゴの下に出す（つる指示 2026-10-05） */
+  #tw-left{position:absolute;left:1vw;top:0;bottom:0;width:62vw;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:17vh;box-sizing:border-box}
+  #tw-logo{display:none}
+  #tw-start{font:900 clamp(18px,2.2vw,34px) "Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;color:#fff;text-shadow:0 0 6px #1a0b2e,0 0 2px #1a0b2e,0 3px 0 #1a0b2e;animation:twblink 1s steps(2,start) infinite}
+  #tw-note{font:700 clamp(11px,1vw,15px) sans-serif;color:#fff;opacity:.6;position:absolute;right:1.5vw;bottom:1.5vh}
+  @keyframes twblink{to{visibility:hidden}}
   #bgblur{position:fixed;inset:-40px;background:#0b0820 url('assets/bg/bg_castle_night_01.png') center top/cover no-repeat;filter:blur(14px) brightness(.75) saturate(1.1);transform:scale(1.05);pointer-events:none}
   canvas{display:block;cursor:pointer}
 </style>
 </head>
 <body>
 <div id="bgblur"></div>
+<div id="titlewide"><div id="tw-left"><img id="tw-logo" src="assets/logo/logo_title_01.png" alt="れんとんのかぼちゃ落としでハッピーハロウィン"><div id="tw-start">クリックでスタート</div></div><div id="tw-note">※音が出ます</div></div>
 <div id="wrap"><canvas id="cv"></canvas></div>
 <script>
 /* =====================================================================
@@ -835,9 +846,19 @@ function drawMusicBtn() {
   if (!musicOn) { ctx.save(); ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0); ctx.strokeStyle = '#ff6b6b'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(MB.x + 12, MB.y + 36); ctx.lineTo(MB.x + 36, MB.y + 12); ctx.stroke(); ctx.restore(); }
 }
 
+/* ---------------- PC用の横長タイトル ---------------- */
+const TW = document.getElementById('titlewide');
+let twOk = false;
+{ const ti = new Image(); ti.onload = () => { twOk = true; }; ti.src = 'assets/cg/title_wide_pr.jpg'; }
+function updateWideTitle() {
+  const on = twOk && scene === 'title' && innerWidth / innerHeight > 1.15 && !CAPTURE;
+  if (document.body.classList.contains('wide-title') !== on) document.body.classList.toggle('wide-title', on);
+}
+TW.addEventListener('pointerdown', e => { e.preventDefault(); audioInit(); if (scene === 'title') startFromTitle(); updateWideTitle(); });
+
 /* ---------------- ループ ---------------- */
 newStage(0, false); S.n = 3;   // タイトル用の短い塔
-function step(dt) { update(dt); render(); }
+function step(dt) { update(dt); render(); updateWideTitle(); }
 window.__tick = dt => step(dt);
 window.__state = () => ({ T, scene, stage: stageIdx + 1, attempt, n: S.n, wob: S.wob, g: S.g, candyStage, candyTotal, demoI, demoLen: DEMO_SEQ.length });
 window.__tap = () => pointer(W / 2, 300);
