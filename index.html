@@ -676,7 +676,7 @@ function drawGauge() {
   ctx.restore();
   if (!firstTapDone && stageIdx === 0 && attempt === 1) txt(TXT.hint, W / 2, gy - 28, 20, '#bff5c8', 'center', 5);   // 初回のみ
 }
-function drawBubble(b, x, y, tailLeft = true, big = false) {
+function drawBubble(b, x, y, tailLeft = true, big = false, tailUp = false) {
   if (!b || T > b.until || T < b.t) return;
   x = clamp(x, 80, W - 80);
   const age = T - b.t, sc = age < .12 ? easeOutBack(age / .12) : 1, fs = big ? 26 : 17;
@@ -684,7 +684,11 @@ function drawBubble(b, x, y, tailLeft = true, big = false) {
   ctx.font = `bold ${fs}px ${FONT}`; const tw = ctx.measureText(b.text).width + 26, hh = fs + 20;
   ctx.fillStyle = '#fff'; ctx.strokeStyle = '#1a0b2e'; ctx.lineWidth = 3;
   roundRect(-tw / 2, -hh / 2, tw, hh, hh / 2); ctx.fill(); ctx.stroke();
-  if (!big) { const s = tailLeft ? 1 : -1; ctx.beginPath(); ctx.moveTo(-12 * s, hh / 2 - 2); ctx.lineTo(-22 * s, hh / 2 + 14); ctx.lineTo(-2 * s, hh / 2 - 1); ctx.closePath(); ctx.fill(); }
+  if (!big) {
+    const s = tailLeft ? 1 : -1, v = tailUp ? -1 : 1;   // tailUp: しっぽを上向きに（吹き出しが顔より下にあるとき）
+    ctx.beginPath(); ctx.moveTo(-12 * s, v * (hh / 2 - 2)); ctx.lineTo(-22 * s, v * (hh / 2 + 14)); ctx.lineTo(-2 * s, v * (hh / 2 - 1)); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-12 * s, v * (hh / 2 + 1)); ctx.lineTo(-22 * s, v * (hh / 2 + 14)); ctx.lineTo(-2 * s, v * (hh / 2 + 1)); ctx.stroke();
+  }
   ctx.fillStyle = '#1a0b2e'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(b.text, 0, 1);
   ctx.restore();
 }
@@ -801,8 +805,9 @@ function render() {
     const k = T - sceneT;
     drawCG(clamp(k / 1.0, 0, 1));                                                // 1.0秒クロスフェード
     PARTS.forEach(p => { if (p.screen) drawCandy(p); });
-    const b1 = { text: TXT.ALL[0], t: sceneT + 1.0, until: 1e9 }, b2 = { text: TXT.ALL[1], t: sceneT + 2.0, until: 1e9 }, b3 = { text: TXT.ALL[2], t: sceneT + 3.0, until: 1e9 };
-    drawBubble(b1, 110, 470, false); drawBubble(b2, 280, 500, true); drawBubble(b3, W / 2, 390, true, true);
+    const b1 = { text: TXT.ALL[0], t: sceneT + 1.0, until: 1e9 }, b2 = { text: TXT.ALL[1], t: sceneT + 2.0, until: 1e9 };
+    // 全クリアの吹き出しは2人の顔の下にあるので、しっぽを上（口元）へ向ける。2人いっしょの「ハッピーハロウィン！」は上の見出しと重複するので出さない（つる指示 2026-10-05）
+    drawBubble(b1, 150, 362, true, false, true); drawBubble(b2, 300, 448, true, false, true);
     if (k > 3.0) {
       const a = clamp((k - 3.0) / 0.4, 0, 1); ctx.globalAlpha = a;
       ctx.fillStyle = 'rgba(20,8,40,.55)'; roundRect(30, 168, W - 60, 150, 20); ctx.fill();
