@@ -41,10 +41,11 @@ const DS = 0.165, WS = 0.095;  // 元画像(原寸)に対する表示倍率。�
 
 /* ---------------- ステージ別の判定数値（04_spec.md §3 と一致させる） ---------------- */
 const STAGES = [
-  { n: 5,  half: 1.00, accel: 0,     min: 1.00, just: [0.34, 0.66], perf: [0.44, 0.56] },
-  { n: 7,  half: 0.80, accel: 0,     min: 0.80, just: [0.37, 0.63], perf: [0.455, 0.545] },
-  { n: 10, half: 0.68, accel: 0.015, min: 0.54, just: [0.39, 0.61], perf: [0.46, 0.54] },
+  { n: 5,  half: 1.00, accel: 0,     min: 1.00, just: [0.385, 0.615], perf: [0.44, 0.56] },
+  { n: 7,  half: 0.80, accel: 0,     min: 0.80, just: [0.415, 0.585], perf: [0.455, 0.545] },
+  { n: 10, half: 0.68, accel: 0.015, min: 0.54, just: [0.435, 0.565], perf: [0.46, 0.54] },
 ];
+// 緑（ジャスト）の幅は 2026-10-05 つる「簡単すぎる」で狭めた: 0.32/0.26/0.22 → 0.23/0.17/0.13。パーフェクトは据え置き
 // half = 針の片道秒数。ステージ3は1段抜くごとに accel 秒ずつ短くなる（下限 min）
 const JUDGE = {
   weak:    { main: 'ぺちっ…',     sub: 'よわい',       col: '#ffd84a', d: 35 },
@@ -482,7 +483,12 @@ function drawGround() {          // ワールド内: 地面の帯と台座
 function drawPumpkin(kind, x, y, a, alpha = 1) {
   ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.globalAlpha *= alpha;
   const o = IMG['pk' + kind];
-  if (o && o.ok) { const bb = o.bb; ctx.drawImage(o.img, bb[0], bb[1], bb[2], bb[3], -BW / 2 - 3, -BH / 2 - 6, BW + 6, BH + 8); }
+  if (o && o.ok) {
+    // 浮いて見える対策（つる指摘 2026-10-05）: 縦横比を保って大きめに描き、天面を1段上の側面で隠す。
+    // 側面の下端の丸み（h*0.09）は下の段の天面に食い込ませる → 積み重なって「乗っている」ように見える
+    const bb = o.bb, w = BW + 28, h = w * bb[3] / bb[2];
+    ctx.drawImage(o.img, bb[0], bb[1], bb[2], bb[3], -w / 2, BH / 2 + h * 0.09 - h, w, h);
+  }
   else {
     const w = BW, h = BH - 4;
     const grd = ctx.createLinearGradient(0, -h / 2, 0, h / 2); grd.addColorStop(0, '#ffa23a'); grd.addColorStop(1, '#e0640f');
@@ -745,7 +751,8 @@ function render() {
   // ---- 画面ごとのUI ----
   if (scene === 'play' || scene === 'intro') drawGauge();
   if (scene === 'title') {
-    drawLogo(196);
+    ctx.save(); ctx.translate(0, 70); drawCG(1); ctx.restore();   // タイトルも全クリア絵（つる指示 2026-10-05）。ロゴで顔が隠れないよう下げる
+    drawLogo(150);
     if (Math.floor((T - sceneT) * 2) % 2 === 0) txt(TXT.tapStart, W / 2, 776, 26, '#fff', 'center', 6);   // 1秒周期で点滅
     ctx.globalAlpha = .6; txt(TXT.soundNote, W - 14, H - 14, 13, '#fff', 'right', 3, 700); ctx.globalAlpha = 1;
   }
