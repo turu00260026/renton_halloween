@@ -135,13 +135,13 @@ function loadBgm(name) {         // mp3 → wav の順に試す。両方無け�
   tryExt(['mp3', 'wav']); return o;
 }
 let bgmCur = null, bgmVol = 1, bgmFade = null, bgmWant = 'bgm_main_loop';
-// 音楽オン・オフ（つる指示 2026-10-05）。BGMだけ止める。SEは鳴る。設定はこの端末に覚える
+// 音のオン・オフ（つる指示 2026-10-05）。オフでBGMも効果音も止める。設定はこの端末に覚える
 let musicOn = true;
 try { musicOn = localStorage.getItem('kabocha_music') !== 'off'; } catch (e) {}
 function setMusic(on) {
   musicOn = on;
   try { localStorage.setItem('kabocha_music', on ? 'on' : 'off'); } catch (e) {}
-  if (!on) bgmStop();
+  if (!on) { bgmStop(); loopSet(null, 0); }
   else if (scene !== 'title') { audioInit(); bgmPlay(bgmWant, false); }
 }
 function bgmPlay(name, restart) {
@@ -158,10 +158,11 @@ function bgmStop() { if (bgmCur) bgmCur.pause(); bgmFade = null; }
 function bgmFadeOut(sec) { if (bgmCur) bgmFade = { from: bgmCur.volume, t: 0, d: sec }; }
 function bgmSetVol(v) { bgmVol = v; if (bgmCur && !bgmFade) bgmCur.volume = v; }
 function se(name, vol = 1) {
-  if (!AUD.on || !AUD.se[name]) return;
+  if (!AUD.on || !musicOn || !AUD.se[name]) return;
   const a = AUD.se[name].cloneNode(); a.volume = vol; const p = a.play(); if (p && p.catch) p.catch(() => {});
 }
 function loopSet(name, vol) {    // vol=0 で停止
+  if (!musicOn) vol = 0;
   for (const n in AUD.loops) {
     const a = AUD.loops[n];
     if (n === name && vol > 0) { a.volume = vol; if (a.paused) { const p = a.play(); if (p && p.catch) p.catch(() => {}); } }
